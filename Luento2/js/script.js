@@ -6,7 +6,7 @@ async function drawChart() {
   const yAccessor = (d) => (d.dewPoint - 32) * (5/9);
   const colorAccessor = (d) => d.cloudCover;
 
-  console.log(dataset[0]);
+  console.log(dataset[220]);
 
   // 2. Tee mitoitus
 
@@ -147,25 +147,95 @@ async function drawChart() {
 
   // 8. lisää lineaarinen regressio muuttujien kastepiste ja humidity välille
 
-  // lineaarinen regressio lasketaan y = mx + b 
-  // eli (ennustettava arvo) = (kulmakerroin * selittävä arvo) + vakiotermi
+      //----------------- TEORIAA ---------------------------------------------------------
+      // lineaarinen regressio lasketaan y = mx + b 
+      // eli (ennustettava arvo) = (kulmakerroin * selittävä arvo) + vakiotermi
 
-  // kulmakerroin lasketaan kaavalla: 
-    // SIGMA { (x - x:n keskiarvo) * (y - y:n keskiarvo) } / SIGMA{ (x - x:n keskiarvo)^2 }
+      // kulmakerroin lasketaan kaavalla: 
+        // SIGMA { (x - x:n keskiarvo) * (y - y:n keskiarvo) } / SIGMA { (x - x:n keskiarvo)^2 }
+        // HUOM. kaavassa x = selittävä ja y = ennustettava data
 
-  // vakiotermi lasketaan kaavalla b = (y:n keskiarvo) - (kulmakerroin * x:n keskiarvo)
+      // vakiotermi lasketaan kaavalla b = (y:n keskiarvo) - (kulmakerroin * x:n keskiarvo)
 
-  // valitsen ennustettavaksi arvoksi kastepisteen lämpötilan (joka on myös merkitty y-akselille)
+      // valitsen ennustettavaksi arvoksi kastepisteen lämpötilan ja selittäväksi arvoksi ilman kosteuden
+      // huomaa se, että toisen asteikko on noin 0.3... 1.0 ja toisen -25... 25. eli data pitää ensin normalisoida
+      // muussa tapauksessa kulmakerroin vaatisi todella ison kertoimen, jotta viiva näyttäisi miltä "odottaisi"
+      //------------------------------------------------------------------------------------
 
-  var vakiotermi = 0;
+  // tuon ensin datan ja talletan sen taulukoihin käyttäen map funktiota:
+  // MUISTA MUUTTAA FAHRENHEITIT TAAS CELSIUKSEKSI
+  var predictiveData = dataset.map(d => (d.dewPoint - 32) * (5/9));
+  var explanatoryData = dataset.map(d => d.humidity);
+
+  // seuraavaksi normalisoi datat välille 0 ja +1
+   predictiveData = normalize(predictiveData);
+   explanatoryData = normalize(explanatoryData);
+
+   // funktio joka normalisoi:
+   function normalize(data) {
+    const min = d3.min(data);
+    const max = d3.max(data);
+    return data.map(value => (value - min) / (max - min));
+   }
+
+  console.log(predictiveData);
+
+  // talletan kulmakertoimen ja vakiotermin muuttujiin:
   var kulmakerroin = 0;
+  var vakiotermi = 0;
 
+  // luon funktion, joka laskee kulmakertoimen
+  function calculate_slope() {
+    // HUOM: Data on jo luotu nimikkeillä predictiveData ja explanatoryData
+    // alusta kulmakertoimen muuttuja
+    var slope = 0;
+    // laske ennustettavan ja selittävän datan keskiarvot
+    predictiveMean = d3.mean(predictiveData);
+    explanatoryMean = d3.mean(explanatoryData);
+    // luo muuttujat, joihin voit tallettaa sigma-loopilla läpi käydyt vastaukset
+    var jaettava = 0;
+    var jakaja = 0;
+    // laske jaettavan arvo kulmakertoimessa SIGMA { (x - x:n keskiarvo) * (y - y:n keskiarvo) }
+    // HUOM. kaavassa x = selittävä ja y = ennustettava data
+    for (i = 0; i < explanatoryData.length; i++) {
+      jaettava += (explanatoryData[i] - explanatoryMean) * (predictiveData[i] - predictiveMean);
+    }
+    // laske jakajan arvo kulmakertoimessa SIGMA { (x - x:n keskiarvo)^2 }
+    // HUOM. kaavassa x = selittävä ja y = ennustettava data
+    for (i = 0; i < explanatoryData.length; i++) {
+      jakaja += (explanatoryData[i] - explanatoryMean)^2;
+    }
+    // jaa osoittaja nimittäjällä saadaksesi kulmakerroin
+    slope = jaettava / jakaja;
+    // palauta kulmakerroin
+    return slope;
+  } // calculate_slope() function ENDS !!!!!!!!!!
+
+  // kutsun kulmakertoimen laskevaa funktiota
+  kulmakerroin = calculate_slope();
+  console.log(`kulmakerroin: ${kulmakerroin}`);
+
+  // laske vakiotermi kaavalla b = (y:n keskiarvo) - (kulmakerroin * x:n keskiarvo)
+  vakiotermi = predictiveMean - (kulmakerroin * explanatoryMean);
+  console.log(`vakiotermi: ${vakiotermi}`);
+
+  // normalisoi myös xScale ja yScale, jotta ne toimivat välillä 0... 1 lineaarista regressiota varten:
+  xScale.domain([0, 1]);
+  yScale.domain([0, 1]);
+
+  // luo generaattori joka piirtää lineaarisen regression
+  const regressionLineGenerator = d3.line()
+    .x((d, i) => xScale(explanatoryData[i]))
+    .y((d, i) => yScale(kulmakerroin * explanatoryData[i] + vakiotermi));
+
+  // piirrä viiva käyttäen em. generaattoria
+  boundingBox.append("path")
+  .datum(predictiveData)
+  .attr("d", regressionLineGenerator)
+  .attr("fill", "none")
+  .attr("stroke", "black")
+  .attr("stroke-width", 2);
   
-
-
-
-
-
 
 }
 
