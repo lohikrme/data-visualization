@@ -112,3 +112,30 @@ mean2
 median2
 variance2
 sd2
+
+testi1 = function (a, b) {
+  return (a + b)
+}
+
+testi1(3,7)
+
+
+testi2 = function (a, b) {
+  return (a - b)
+}
+
+1 - round(pnorm(2.58), 4)
+1 - round(pnorm(8.16), 4)
+
+0.6^10
+0.6^60
+
+((1.96 * 20) / 5)^2
+
+Z = qnorm(0.995)
+Z
+
+((Z * 1.5) / 0.5)^2
+
+n = ((2.576 * 1.5) / 0.5)^2
+n
