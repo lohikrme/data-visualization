@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Histogrammit</title>
+    <style>
+      a.button {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 1em;
+        font-weight: bold;
+        color: blue;
+        display: inline-block;
+        padding: 12px 24px;
+        text-align: center;
+        border: 3px solid blue;
+        background-color: greenyellow;
+      }
+      a.button:hover {
+        opacity: 0.5;
+      }
+      a.button:active {
+        background-color: green;
+      }
+
+      .barGroup rect {
+        transition: y 1s ease-out, height 1s ease-out;
+      }
+
+      .barGroup text {
+        transition: transform 1s ease-out;
+      }
+
+      .meanLineText {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        text-anchor: middle;
+        transition: transform 1s ease-out;
+      }
+
+      .line {
+        stroke: black;
+        stroke-width: 2px;
+        stroke-dasharray: 2px 2px;
+        transition: transform 1s ease-out;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <p>
+        <a href="#" id="button" class="button">Vaihda Graafia</a>
+      </p>
+    </div>
+
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="./js/script3.js"></script>
+  </body>
+</html>

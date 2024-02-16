@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Histogrammi</title>
+    <style>
+      .barGroup rect:hover {
+        fill: purple;
+      }
+
+      .wrapper {
+        position: relative;
+      }
+
+      .tooltip {
+        opacity: 0;
+        position: absolute;
+        top: -12px;
+        left: 0;
+        padding: 0.6em 1em;
+        background: #fff;
+        text-align: center;
+        border: 1px solid #aaa;
+        z-index: 10;
+        transition: all 0.2s ease-out;
+        pointer-events: none;
+      }
+
+      .tooltip:before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 12px;
+        height: 12px;
+        background: #fff;
+        border: 1px solid #aaa;
+        border-top-color: transparent;
+        border-left-color: transparent;
+        transform: translate(-50%, 50%) rotate(45deg);
+        transform-origin: center center;
+        z-index: 10;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="tooltip" class="tooltip">
+        <div class="tooltip-range">Humidity: <span id="range"></span></div>
+        <div class="tooltip-value"><span id="count"></span> days</div>
+      </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="./js/script.js"></script>
+  </body>
+</html>
