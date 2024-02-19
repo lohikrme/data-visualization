@@ -12,20 +12,31 @@
         font-weight: bold;
         color: blue;
         display: inline-block;
-        padding: 12px 24px;
+        padding: 8px 10px;
         text-align: center;
-        border: 3px solid blue;
+        border: 2px solid blue;
+        background-color: greenyellow;
+      }
+      a.button:hover {
+        opacity: 0.5;
+      }
+      a.button:active {
+        background-color: green;
+      }
+      h1 {
+        text-align: center;
       }
     </style>
   </head>
   <body>
     <div id="wrapper">
+      <h1>Histograms</h1>
       <p>
-        <a href="#" id="button" class="button">Vaihda Graafia</a>
+        <a href="#" id="button" class="button">New Histogram!</a>
       </p>
     </div>
 
     <script src="https://d3js.org/d3.v6.js"></script>
-    <script src="./js/script3.js"></script>
+    <script src="./js/interactive-histogram.js"></script>
   </body>
 </html>

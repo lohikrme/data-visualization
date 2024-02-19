@@ -285,3 +285,27 @@ higher = round((mean + Z * sample_sd)*100, 1)
 
 print(paste("Lower:", lower, "Higher:", higher))
 
+
+
+# short test about R's 'sd()' function
+testdata = c(20.0, 18.6, 18.9, 19.3, 19.5, 19.2, 20.1, 20.2, 19.4, 18.8, 18.2, 
+             19.4, 19.6, 20.1, 19.3, 18.7, 20.3, 19.5, 19.6, 19.7, 20.5, 18.6, 
+             18.9, 19.3, 19.5, 19.2, 20.1, 20.2, 19.4, 18.8, 18.2, 19.4, 19.6, 
+             20.1, 19.3, 18.7, 20.3, 19.5, 19.6, 19.7)
+
+# divide with n-1
+mean = mean(testdata)
+sample_size = length(testdata)
+variance = sum((testdata - mean)^2 / (sample_size - 1))
+standard_deviation = sqrt(variance)
+standard_deviation
+
+# divide with n
+variance2 = sum((testdata - mean)^2 / (sample_size))
+standard_deviation2 = sqrt(variance2)
+standard_deviation2
+
+# use inbuilt sd function
+sd(testdata)
+
+

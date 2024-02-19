@@ -1,10 +1,26 @@
+// define the drawChart function as async, to be able to load the data before drawing
 async function drawChart() {
-  // Read data
+
+  // ---------- READ DATA -----------------------------------------------
 
   const dataset = await d3.json("./../../Data/my_weather_data.json");
   console.table(dataset[0]);
-  // Create dimensions
-  const width = 600;
+
+
+  // ---------- CREATE DIMENSIONS ----------------------------------------
+  // define width based on the monitor width
+  let width;
+  if (window.innerWidth > 650) {
+    width = 600;
+  } else {
+    width = window.innerWidth * 0.9;
+  }
+  // every time monitor width changes, reload the website
+  window.onresize = function () {
+    location.reload();
+  };
+
+  // use these dimensions to easily modify the size of graph
   let dimensions = {
     width: width,
     height: width * 0.6,
@@ -16,18 +32,23 @@ async function drawChart() {
     },
   };
 
+  // by taking margins from width and height, we know the drawing area size
   dimensions.boundedWidth =
     dimensions.width - dimensions.margin.left - dimensions.margin.right;
   dimensions.boundedHeight =
     dimensions.height - dimensions.margin.top - dimensions.margin.bottom;
-  // Draw canvas and inner wrapper
-  const wrapper = d3
+  
+  // ---------- CREATE SVG GRAPH FOR DRAWING ----------------------------------------
+  // select the 'wrapper' div from HTML and add a SVG graph onto it
+  const svg = d3
     .select("#wrapper")
     .append("svg")
     .attr("width", dimensions.width)
     .attr("height", dimensions.height);
 
-  const boundingBox = wrapper
+  // select the previously made SVG graph and add a group called boundingBox
+  // the idea of this variable is to create a group to contain all graphical content 
+  const boundingBox = svg
     .append("g")
     .attr("id", "boundingBox")
     .style(
@@ -35,54 +56,68 @@ async function drawChart() {
       `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`
     );
 
-  // Create all static elements. Notice how they are not
-  // set as variables. These will be selected by their
-  // class name.
+  // ---------- CREATE STATIC GROUP FOR HISTOGRAMS AND STATIC GROUP FOR X-AXIS  ---------------------------
 
-  // group for all bars
+  // add "barsGroup" and "x-axis" groups to boundingBox-group
+  // also add the x-axis-label on the x-axis group (e,g humidity reads below x-axis)
+  // notice that label y-location is inherited from group x-axis
+  // thats why y is not boundingBox.Height but just bottom.margin - 10
   boundingBox.append("g").attr("class", "barsGroup");
-  // line for mean value
-  boundingBox.append("line").attr("class", "line");
-  boundingBox.append("text").attr("class", "meanLineText");
-  boundingBox
-    .append("g")
-    // group for x-axis content
-    .attr("class", "x-axis")
+  boundingBox.append("g").attr("class", "x-axis")
     .style("transform", `translateY(${dimensions.boundedHeight}px)`)
-    // text element for x-axis label inside x-axis group
     .append("text")
-    .attr("class", "x-axis-label");
+    .attr("class", "x-axis-label")
+    .attr("x", dimensions.boundedWidth / 2)
+    .attr("y", dimensions.margin.bottom - 10) 
+    .attr("text-anchor", "middle")
+    .attr("font-size", 16);
 
-  // SUBFUNCTION
+  // line for mean value starts in the middle of chart
+  boundingBox.append("line").attr("class", "line")
+    .attr("x1", dimensions.boundedWidth / 2)
+    .attr("x2", dimensions.boundedWidth / 2)
+    .attr("y1", -10)
+    .attr("y2", dimensions.boundedHeight);
+  boundingBox.append("text").attr("class", "meanLineText")
+  .attr("x", dimensions.boundedWidth / 2);
+
+  // ---------- USE SUBFUNCTION TO DRAW 1 HISTOGRAM ------------------------------------------------------
+  // ---------- NEEDED TO CREATE AN INTERACTIVE CHART THAT ALLOWS SWITCHING CHARTS -----------------------
   const drawHistogram = (metric) => {
+    // load data using selected metric
     const metricAccessor = (d) => d[metric];
+    
+    // store some measures and times for graph and animations
     const yAccessor = (d) => d.length;
+    const barPadding = 4;
+    const exitTransition = d3.transition().duration(800);
+    const updateTransition = exitTransition.transition().duration(600);
 
-    // Create scales (and groups in this case)
+    // Create scales and split data to parts, which are used to draw the histograms
     const xScale = d3
       .scaleLinear()
       .domain(d3.extent(dataset, metricAccessor))
       .range([0, dimensions.boundedWidth])
       .nice();
 
-    const groupGenerator = d3
+    const histogramGenerator = d3
       .histogram()
       .domain(xScale.domain())
       .value(metricAccessor)
       .thresholds(11);
 
-    const groups = groupGenerator(dataset);
+    const groups = histogramGenerator(dataset);
+
     const yScale = d3
       .scaleLinear()
       .domain([0, d3.max(groups, yAccessor)])
       .range([dimensions.boundedHeight, 0])
       .nice();
 
+
     // Draw data
 
-    const barPadding = 4;
-    const exitTransition = d3.transition().duration(800);
-    const upDateTransition = exitTransition.transition().duration(800);
+    
 
     // select the main group inside boundingBox group
     let barGroups = boundingBox
@@ -143,14 +178,14 @@ async function drawChart() {
     // because rects are already there
     const rects = barGroups
       .select("rect")
-      .transition(upDateTransition)
+      .transition(updateTransition)
       .attr("x", (d) => xScale(d.x0) + barPadding / 2)
       .attr("y", (d) => yScale(yAccessor(d)))
       .attr("width", (d) =>
         d3.max([0, xScale(d.x1) - xScale(d.x0) - barPadding])
       )
       .attr("height", (d) => dimensions.boundedHeight - yScale(yAccessor(d)))
-      .transition(upDateTransition)
+      .transition(updateTransition)
       .attr("fill", "lightblue");
 
     console.log(rects);
@@ -160,7 +195,7 @@ async function drawChart() {
     // because texts are already there
     const barText = barGroups
       .select("text")
-      .transition(upDateTransition)
+      .transition(updateTransition)
       .attr("x", (d) => xScale(d.x0) + (xScale(d.x1) - xScale(d.x0)) / 2)
       .attr("y", (d) => yScale(yAccessor(d)) - 5)
       .text(yAccessor)
@@ -176,6 +211,7 @@ async function drawChart() {
     // because line is already there
     const line = boundingBox
       .select(".line")
+      .transition(updateTransition)
       .attr("x1", xScale(mean))
       .attr("x2", xScale(mean))
       .attr("y1", -10)
@@ -189,6 +225,7 @@ async function drawChart() {
     // because text is already there
     const meanLineText = boundingBox
       .select(".meanLineText")
+      .transition(updateTransition)
       .attr("x", xScale(mean))
       .attr("y", -15)
       .text("mean " + mean.toFixed(2))
@@ -201,7 +238,7 @@ async function drawChart() {
 
     const xAxis = boundingBox
       .select(".x-axis")
-      .transition(upDateTransition)
+      .transition(updateTransition)
       .call(xAxisGenerator);
     // in the old code we made transform here, it's not
     // needed since we made it already
@@ -210,13 +247,12 @@ async function drawChart() {
     // because text is already there
     const xAxisLabel = xAxis
       .select(".x-axis-label")
-      .attr("x", dimensions.boundedWidth / 2)
-      .attr("y", dimensions.margin.bottom - 10)
       .attr("fill", "black")
       .text(metric)
-      .style("font-size", "14px")
+      .style("font-size", "16px")
       .style("text-transform", "capitalize");
-  }; // Draw histogram function closes here
+
+  }; // <-------- Draw histogram function closes here
 
   const metrics = [
     "humidity",
@@ -247,5 +283,7 @@ async function drawChart() {
 
   let metricIndex = 0;
   drawHistogram(metrics[metricIndex]);
-} // drawChart function closes here
+
+} // <-------- drawChart function closes here
+
 drawChart();

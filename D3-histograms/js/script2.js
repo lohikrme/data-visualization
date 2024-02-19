@@ -2,14 +2,19 @@ async function drawChart() {
   // Data
   const dataset = await d3.json("./../../Data/my_weather_data.json");
   console.table(dataset[0]);
+
+
   // Mitoitus
   /**** Tässä huomidaan pienet näytöt ****/
   let width;
-  if (window.innerWidth > 600) {
+  if (window.innerWidth > 660) {
     width = 600;
   } else {
     width = window.innerWidth * 0.9;
   }
+  window.onresize = function () {
+    location.reload();
+  };
 
   let dimensions = {
     width: width,
@@ -153,6 +158,4 @@ async function drawChart() {
 
 drawChart();
 
-window.onresize = function () {
-  location.reload();
-};
+
