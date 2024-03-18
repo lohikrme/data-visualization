@@ -1,0 +1,128 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 1000px;
+    background-color: rgb(75, 100, 154);
+    background-image: url(../photos/windmill.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+header {
+    height: 100px;
+    
+}
+
+header h1 {
+    color: lightgoldenrodyellow;
+    margin-left: 2vw;
+    margin-top: 5vh;
+}
+
+section {
+    width: 40vw;
+    margin-left: 2vw;
+}
+
+section p {
+    color: lightgoldenrodyellow;
+}
+
+#link-to-fingrid-website {
+    color: greenyellow;
+}
+
+#link-to-fingrid-website:hover {
+    color: blue;
+}
+
+#link-to-fingrid-website:active {
+    color: chartreuse;
+}
+
+svg {
+    height: 400px;
+    width: 400px;
+    border: 1px solid black;
+    margin-left: 2vw;
+    margin-top: 4vh;
+}
+
+.date-input-area {
+    margin-left: 2vw;
+    margin-top: 4vh;
+}
+
+.button-area {
+    margin-left: 2vw;
+    margin-top: 4vh;
+}
+
+.button-area button{
+    min-width: 111px;
+    min-height: 30px;
+    background-color: greenyellow;
+}
+
+.button-area button:hover{
+    background-color: grey;
+}
+
+.button-area button:active{
+    background-color: chartreuse;
+}
+
+footer {
+    width: 100%;
+    height: 50px;
+    margin-top: 5vh
+}
+
+footer p {
+    margin-top: 10vh;
+    font-size: 0.8em;
+    color: white;
+    text-align: center;
+}
+
+@media only screen and (max-width: 800px){
+    
+    body {
+        background-position: height 500px;
+    }
+
+    header h1 {
+        margin-left: 5vw;
+    }
+
+    section {
+        margin-left: 5vw;
+        margin-top: 7vh;
+        font-size: 1.2em;
+    }
+
+    svg {
+        margin-left: 5vw;
+        margin-top: 5vh;
+        width: 90vw;;
+        height: 90vw;
+    }
+
+    .button-area, .date-input-area {
+        margin-left: 5vw;
+    }
+
+    .button-area button {
+        background-color: rgb(196, 255, 47);
+    }
+
+    .button-area button:hover{
+        background-color: chartreuse;
+    }
+    
+
+}

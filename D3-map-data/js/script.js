@@ -1,12 +1,12 @@
 async function drawMap() {
   // 1. Lue data
   const countryShapes = await d3.json("./../../Data/world_countries.geojson");
-  console.log(countryShapes);
+  // console.log(countryShapes);
   const countryNameAccessor = (d) => d.properties["NAME"];
   const countryIdAccessor = (d) => d.properties["ADM0_A3_RU"];
   const dataset = await d3.csv("./../../Data/world_bank_data.csv");
   const metric = "Population growth (annual %)";
-  console.log(dataset[metric]);
+  // console.log(dataset);
   let metricDataByCountry = {};
   dataset.forEach((d) => {
     if (d["Series Name"] == metric) {

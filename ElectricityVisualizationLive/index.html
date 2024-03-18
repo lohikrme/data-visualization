@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+
+    <title>Analyze electricity production and consumption in Finland</title>
+</head>
+
+<body>
+
+    <header>
+        <h1>Analyze electricity production and consumption in Finland</h1>
+    </header>
+    
+    <section>
+        <p>Welcome to our website! You can watch here visualizations of Finland's electricity
+            production, consumption and import. 
+            This website uses 
+            <a id="link-to-fingrid-website" href="https://data.fingrid.fi/en/datasets">fingrid.fi</a>
+            as the source of the data. 
+            <br> <br>
+            'Overview' button shows total production, total consumption and 
+            total importation (+ means export, - means import) of electricity in Finland. 
+            <br> <br>
+            'Renewability' button shows how much of total production is achieved
+            via domestic wind, hydro or solar energy, which are the main 
+            renewable energy sources in Finland. 
+            <br><br>
+            Please notice that you should also select a starting and
+            ending date for the data visualization you want to do. 
+            We visualize here data only in accurasy of days.
+            So, for example, if it is 18th march and you want to see
+            information of yesterday's electricity,
+            you can select starting date: 17th march
+            and ending date: 18th march.
+        </p>
+    </section>
+
+    <svg id="electricity-visualization"></svg>
+
+    <div class="date-input-area">
+        <input id="starting-date-input" type="date" value="2018-07-22">
+        <input id="ending-date-input" type="date" value="2018-07-22">
+
+    </div>
+
+    <div class="button-area">
+        <button id="overview-button">Overview</button>
+        <button id="renewability-button">Renewability</button>
+    </div>
+
+    <footer>
+        <p>Made by Chinese_Parrot 18th march 2024</p>
+    </footer>
+    
+
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="scripts/visualization.js"></script>
+
+    <script>
+        var today = new Date();
+        var today_str = today.toISOString().split('T')[0];
+        document.getElementById('ending-date-input').value = today_str;
+
+        var yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        var yesterday_str = yesterday.toISOString().split('T')[0];
+        document.getElementById('starting-date-input').value = yesterday_str;
+    </script>
+
+    <script>
+        window.addEventListener('resize', () => location.reload())
+    </script>
+
+</body>
+</html>
