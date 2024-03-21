@@ -1,0 +1,19 @@
+* {
+    margin:0;
+    padding:0;
+}
+
+body {
+    height: 1000px;
+    background-color: azure;
+}
+
+header {
+    height: 10vh;
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+wrapper {
+    margin-left: 20px;
+}
